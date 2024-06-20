@@ -11,7 +11,7 @@
 ## TODO
 
 - [x] Freeze packages inside `requirements.txt` file.
-- [ ] Refactor code into classes, consts files, loggers and better exception handling.
+- [x] Refactor code into classes, consts files, docstrings, loggers and better exception handling.
 - [ ] Refactor completely the `scrape.py` file: incorporate sidebar into application, allow user to CRUD RAG knowledge base from UI.
 - [ ] Some efficiency improvements in the code.
 - [ ] Dockerize the application.

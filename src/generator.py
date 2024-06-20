@@ -26,7 +26,7 @@ class Generator:
         self.chat_model = self._load_chat_model()
 
     @st.cache_resource
-    def _load_embeddings_and_database(_self, dataset_path) -> DeepLake:
+    def _load_embeddings_and_database(_self, dataset_path: str) -> DeepLake:
         try:
             embeddings = OpenAIEmbeddings()
             db = DeepLake(
@@ -37,7 +37,9 @@ class Generator:
             raise Exception(f"Error loading embeddings and database: {str(e)}")
 
     @st.cache_resource
-    def _load_chat_model(_self, distance_metric="cos", fetch_k: int = 100, k: int = 4) -> RetrievalQA:
+    def _load_chat_model(
+        _self, distance_metric="cos", fetch_k: int = 100, k: int = 4
+    ) -> RetrievalQA:
         try:
             retriever = _self.db.as_retriever()
             retriever.search_kwargs = {
@@ -54,13 +56,31 @@ class Generator:
         except Exception as e:
             raise Exception(f"Error loading chat model: {str(e)}")
 
-    def search_db(self, user_input: str):
+    def search_db(self, user_input: str) -> str:
+        """
+        Invoke the chat model to search the database using retrieval-based QA model.
+
+        Args:
+            user_input: The user's input to search the database with.
+
+        Returns:
+            The response from the chat model.
+        """
         try:
             return self.chat_model.invoke({"query": user_input})
         except Exception as e:
             raise Exception(f"Error searching database: {str(e)}")
 
     def transcribe_audio(self, audio_file_path: str) -> str:
+        """
+        Transcribe the audio file using the Whisper API.
+
+        Args:
+            audio_file_path: The path to the audio file to transcribe.
+
+        Returns:
+            The transcription of the audio file.
+        """
         try:
             with open(audio_file_path, "rb") as audio_file:
                 response = openai.audio.transcriptions.create(

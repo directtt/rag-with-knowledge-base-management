@@ -12,11 +12,18 @@ class UI:
     """
     A class to handle the streamlit user interface for the application.
     """
+
     def __init__(self, generator: Generator):
         self.generator = generator
         self.transcription = None
 
     def record_and_transcribe_audio(self):
+        """
+        Record audio from the user and transcribe it using the Whisper API.
+
+        Returns:
+            None, saves the audio to a temporary file.
+        """
         audio_bytes = audio_recorder()
         if audio_bytes:
             st.audio(audio_bytes, format=AUDIO_FORMAT)
@@ -29,22 +36,45 @@ class UI:
                 self.display_transcription()
 
     def display_transcription(self):
+        """
+        Display the transcribed audio in the UI.
+
+        Returns:
+            None
+        """
         if self.transcription:
             st.write(f"Transcription: {self.transcription}")
         else:
             st.write("Error transcribing audio.")
 
-    def get_user_input(self):
+    def get_user_input(self) -> str:
+        """
+        Get the user's input from the text input field or the transcribed audio.
+
+        Returns:
+            The user's input.
+        """
         return st.text_input(
             "", value=self.transcription if self.transcription else "", key="input"
         )
 
     @staticmethod
-    def display_conversation(history):
+    def display_conversation(history: st.session_state):
+        """
+        Display the conversation history in the UI.
+
+        Args:
+            history: The conversation history to display.
+
+        Returns
+            None
+        """
         eleven_labs = ElevenLabs(api_key=ELEVEN_API_KEY)
-        for i in range(len(history["generated"])):
-            message(history["past"][i], is_user=True, key=f"{i}_user")
-            message(history["generated"][i], key=f"{i}")
+        for i, (past, generated) in enumerate(
+            zip(history["past"], history["generated"])
+        ):
+            message(past, is_user=True, key=f"{i}_user")
+            message(generated, key=f"{i}")
             # TODO: later change API key
             # audio = eleven_labs.generate(text=history["generated"][i], stream=False)
             #  = b"".join(audio)
