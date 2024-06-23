@@ -50,10 +50,7 @@ def scrape_all_content(base_url, relative_urls):
     for relative_url in relative_urls:
         full_url = construct_full_url(base_url, relative_url)
         scraped_content = scrape_page_content(full_url)
-        document = Document(
-            page_content=scraped_content,
-            metadata={"source": full_url}
-        )
+        document = Document(page_content=scraped_content, metadata={"source": full_url})
         documents.append(document)
 
     return documents

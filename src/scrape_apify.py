@@ -83,9 +83,7 @@ def embed_data(docs_split: list[Document]):
     my_activeloop_dataset_name = "langchain_course_jarvis_assistant"
     dataset_path = f"hub://{my_activeloop_org_id}/{my_activeloop_dataset_name}"
 
-    dbs = DeepLake(
-        dataset_path=dataset_path, embedding_function=embeddings
-    )
+    dbs = DeepLake(dataset_path=dataset_path, embedding_function=embeddings)
     dbs.add_documents(docs_split)
 
 
@@ -93,7 +91,7 @@ def main():
     urls = [
         "https://www.espn.com/soccer/report/_/gameId/700703",
         "https://www.espn.com/soccer/report/_/gameId/690579",
-        "https://www.espn.com/soccer/report/_/gameId/690591"
+        "https://www.espn.com/soccer/report/_/gameId/690591",
     ]
     for url in urls:
         docs = scrape_data(url)

@@ -84,8 +84,9 @@ class UI:
                     st.write(f"**Source:** {source.metadata['source']}")
                     st.write(f"**Content:** {source.page_content}")
                     st.write(
-                        f"**Relevance to Query:** {source.metadata['relevance_score'] * 100}%"
+                        f"**Relevance to Query:** {round(source.metadata['relevance_score'] * 100, 2)}%"
                     )
+                    st.divider()
 
     def main(self):
         st.title("rag-with-voice-assistant 🌐")
@@ -101,9 +102,11 @@ class UI:
             st.session_state["source_documents"] = [[]]
 
         if user_input:
-            output = self.generator.search_db(user_input)
+            with st.spinner("Searching knowledge base..."):
+                output = self.generator.search_db(user_input)
+
             st.session_state["past"].append(user_input)
-            st.session_state["generated"].append(output["result"])
+            st.session_state["generated"].append(output["answer"])
             st.session_state["source_documents"].append(output["source_documents"])
 
         if st.session_state["generated"]:

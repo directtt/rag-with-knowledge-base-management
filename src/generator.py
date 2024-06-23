@@ -1,5 +1,6 @@
 import openai
-from langchain.chains import RetrievalQA
+from langchain.chains.conversational_retrieval.base import ConversationalRetrievalChain
+from langchain.memory import ConversationBufferWindowMemory
 from langchain.retrievers import ContextualCompressionRetriever
 from langchain.retrievers.document_compressors import CohereRerank
 from langchain_community.chat_models import ChatOpenAI
@@ -27,7 +28,7 @@ class Generator:
         self.transcription_model_name = transcription_model_name
 
         self.db = self._load_embeddings_and_database(dataset_path)
-        self.chat_model = self._load_chat_model()
+        self.chat_model, self.memory = self._load_chat_model()
 
     @st.cache_resource
     def _load_embeddings_and_database(_self, dataset_path: str) -> DeepLake:
@@ -42,24 +43,33 @@ class Generator:
 
     @st.cache_resource
     def _load_chat_model(
-        _self, top_n: int = 3
-    ) -> RetrievalQA:
+        _self, top_n: int = 3, k_history: int = 5
+    ) -> tuple[ConversationalRetrievalChain, ConversationBufferWindowMemory]:
         try:
             retriever = _self.db.as_retriever()
             compressor = CohereRerank(model=_self.cohere_rerank_model_name, top_n=top_n)
             compression_retriever = ContextualCompressionRetriever(
                 base_compressor=compressor, base_retriever=retriever
             )
-            chat_model = RetrievalQA.from_llm(
-                ChatOpenAI(model_name=_self.chat_model_name),
-                retriever=compression_retriever,
-                return_source_documents=True
+            memory = ConversationBufferWindowMemory(
+                k=k_history,
+                memory_key="chat_history",
+                return_messages=True,
+                output_key="answer",
             )
-            return chat_model
+            chat_model = ConversationalRetrievalChain.from_llm(
+                llm=ChatOpenAI(model_name=_self.chat_model_name),
+                retriever=compression_retriever,
+                memory=memory,
+                verbose=True,
+                chain_type="stuff",
+                return_source_documents=True,
+            )
+            return chat_model, memory
         except Exception as e:
             raise Exception(f"Error loading chat model: {str(e)}")
 
-    def search_db(self, user_input: str) -> str:
+    def search_db(self, user_input: str) -> dict[str, any]:
         """
         Invoke the chat model to search the database using retrieval-based QA model.
 
@@ -70,7 +80,12 @@ class Generator:
             The response from the chat model.
         """
         try:
-            return self.chat_model.invoke({"query": user_input})
+            return self.chat_model(
+                {
+                    "question": user_input,
+                    "chat_history": self.memory.load_memory_variables({}),
+                }
+            )
         except Exception as e:
             raise Exception(f"Error searching database: {str(e)}")
 
