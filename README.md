@@ -14,8 +14,9 @@
 - [x] Refactor code into classes, consts files, docstrings, loggers and better exception handling.
 - [x] Add dropdown to display which content from RAG was used to answer the user prompt.
 - [x] Make model understand previous context
+- [x] Display user input in the bottom, after conversation.
 - [ ] Refactor completely the `scrape.py` file: incorporate sidebar into application, allow user to CRUD RAG knowledge base from UI.
-- [ ] Some efficiency improvements in the code.
+- [ ] Some efficiency improvements of the app.
 - [ ] Dockerize the application.
 - [ ] Fill README.md & record small demo. 
 

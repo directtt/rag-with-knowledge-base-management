@@ -43,7 +43,7 @@ class Generator:
 
     @st.cache_resource
     def _load_chat_model(
-        _self, top_n: int = 3, k_history: int = 5
+        _self, top_n: int = 3, k_history: int = 3
     ) -> tuple[ConversationalRetrievalChain, ConversationBufferWindowMemory]:
         try:
             retriever = _self.db.as_retriever()
