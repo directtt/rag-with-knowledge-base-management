@@ -1,5 +1,7 @@
 import openai
 from langchain.chains import RetrievalQA
+from langchain.retrievers import ContextualCompressionRetriever
+from langchain.retrievers.document_compressors import CohereRerank
 from langchain_community.chat_models import ChatOpenAI
 from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_community.vectorstores import DeepLake
@@ -16,10 +18,12 @@ class Generator:
     def __init__(
         self,
         chat_model_name: str = "gpt-3.5-turbo",
+        cohere_rerank_model_name: str = "rerank-english-v2.0",
         transcription_model_name: str = "whisper-1",
         dataset_path: str = ACTIVELOOP_DATASET_PATH,
     ):
         self.chat_model_name = chat_model_name
+        self.cohere_rerank_model_name = cohere_rerank_model_name
         self.transcription_model_name = transcription_model_name
 
         self.db = self._load_embeddings_and_database(dataset_path)
@@ -38,19 +42,18 @@ class Generator:
 
     @st.cache_resource
     def _load_chat_model(
-        _self, distance_metric="cos", fetch_k: int = 100, k: int = 4
+        _self, top_n: int = 3
     ) -> RetrievalQA:
         try:
             retriever = _self.db.as_retriever()
-            retriever.search_kwargs = {
-                "distance_metric": distance_metric,
-                "fetch_k": fetch_k,
-                "k": k,
-            }
+            compressor = CohereRerank(model=_self.cohere_rerank_model_name, top_n=top_n)
+            compression_retriever = ContextualCompressionRetriever(
+                base_compressor=compressor, base_retriever=retriever
+            )
             chat_model = RetrievalQA.from_llm(
                 ChatOpenAI(model_name=_self.chat_model_name),
-                retriever=retriever,
-                return_source_documents=True,
+                retriever=compression_retriever,
+                return_source_documents=True
             )
             return chat_model
         except Exception as e:

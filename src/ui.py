@@ -70,8 +70,8 @@ class UI:
             None
         """
         eleven_labs = ElevenLabs(api_key=ELEVEN_API_KEY)
-        for i, (past, generated) in enumerate(
-            zip(history["past"], history["generated"])
+        for i, (past, generated, source_documents) in enumerate(
+            zip(history["past"], history["generated"], history["source_documents"])
         ):
             message(past, is_user=True, key=f"{i}_user")
             message(generated, key=f"{i}")
@@ -79,6 +79,13 @@ class UI:
             # audio = eleven_labs.generate(text=history["generated"][i], stream=False)
             #  = b"".join(audio)
             # st.audio(audio_bytes, format="audio/mp3")
+            with st.expander("See Resources"):
+                for source in source_documents:
+                    st.write(f"**Source:** {source.metadata['source']}")
+                    st.write(f"**Content:** {source.page_content}")
+                    st.write(
+                        f"**Relevance to Query:** {source.metadata['relevance_score'] * 100}%"
+                    )
 
     def main(self):
         st.title("rag-with-voice-assistant 🌐")
@@ -90,11 +97,14 @@ class UI:
             st.session_state["generated"] = ["I am ready to help you"]
         if "past" not in st.session_state:
             st.session_state["past"] = ["Hey there!"]
+        if "source_documents" not in st.session_state:
+            st.session_state["source_documents"] = [[]]
 
         if user_input:
             output = self.generator.search_db(user_input)
             st.session_state["past"].append(user_input)
             st.session_state["generated"].append(output["result"])
+            st.session_state["source_documents"].append(output["source_documents"])
 
         if st.session_state["generated"]:
             self.display_conversation(st.session_state)

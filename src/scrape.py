@@ -7,6 +7,7 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.document_loaders import TextLoader
 import re
 from dotenv import load_dotenv
+from langchain.schema import Document
 
 load_dotenv()
 
@@ -43,36 +44,19 @@ def scrape_page_content(url):
     return text.strip()
 
 
-def scrape_all_content(base_url, relative_urls, filename):
+def scrape_all_content(base_url, relative_urls):
     # Loop through the list of URLs, scrape content and add it to the content list
-    content = []
+    documents = []
     for relative_url in relative_urls:
         full_url = construct_full_url(base_url, relative_url)
         scraped_content = scrape_page_content(full_url)
-        content.append(scraped_content.rstrip("\n"))
+        document = Document(
+            page_content=scraped_content,
+            metadata={"source": full_url}
+        )
+        documents.append(document)
 
-    # Write the scraped content to a file
-    with open(filename, "w", encoding="utf-8") as file:
-        for item in content:
-            file.write("%s\n" % item)
-
-    return content
-
-
-# Define a function to load documents from a file
-def load_docs(root_dir, filename):
-    # Create an empty list to hold the documents
-    docs = []
-    try:
-        # Load the file using the TextLoader class and UTF-8 encoding
-        loader = TextLoader(os.path.join(root_dir, filename), encoding="utf-8")
-        # Split the loaded file into separate documents and add them to the list of documents
-        docs.extend(loader.load_and_split())
-    except Exception as e:
-        # If an error occurs during loading, ignore it and return an empty list of documents
-        pass
-    # Return the list of documents
-    return docs
+    return documents
 
 
 def split_docs(docs):
@@ -89,23 +73,16 @@ def main():
     embeddings = OpenAIEmbeddings(model="text-embedding-ada-002")
 
     base_url = "https://huggingface.co"
-    # Set the name of the file to which the scraped content will be saved
-    filename = "content.txt"
-    # Set the root directory where the content file will be saved
-    root_dir = "./"
+    # Get the list of relative URLs for documentation pages
     relative_urls = get_documentation_urls()
-    # Scrape all the content from the relative URLs and save it to the content file
-    scrape_all_content(base_url, relative_urls, filename)
-    # Load the content from the file
-    docs = load_docs(root_dir, filename)
+    # Scrape all the content from the relative URLs
+    documents = scrape_all_content(base_url, relative_urls)
     # Split the content into individual documents
-    texts = split_docs(docs)
+    texts = split_docs(documents)
     # Create a DeepLake database with the given dataset path and embedding function
     db = DeepLake(dataset_path=dataset_path, embedding_function=embeddings)
     # Add the individual documents to the database
     db.add_documents(texts)
-    # Clean up by deleting the content file
-    os.remove(filename)
 
 
 # Call the main function if this script is being run as the main program
