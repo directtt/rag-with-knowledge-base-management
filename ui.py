@@ -4,8 +4,8 @@ from audio_recorder_streamlit import audio_recorder
 from elevenlabs.client import ElevenLabs
 from streamlit_chat import message
 
-from generator import Generator
-from consts import TEMP_AUDIO_PATH, AUDIO_FORMAT, ELEVEN_API_KEY
+from src.generator import Generator
+from src.consts import TEMP_AUDIO_PATH, AUDIO_FORMAT, ELEVEN_API_KEY
 
 
 class UI:

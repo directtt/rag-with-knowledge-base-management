@@ -8,7 +8,7 @@ from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_community.vectorstores import DeepLake
 import streamlit as st
 
-from consts import ACTIVELOOP_DATASET_PATH
+from src.consts import ACTIVELOOP_DATASET_PATH
 
 
 class Generator:
@@ -35,7 +35,7 @@ class Generator:
         try:
             embeddings = OpenAIEmbeddings()
             db = DeepLake(
-                dataset_path=dataset_path, read_only=True, embedding_function=embeddings
+                dataset_path=dataset_path, embedding_function=embeddings
             )
             return db
         except Exception as e:
