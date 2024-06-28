@@ -1,11 +1,11 @@
 import os
 import streamlit as st
 from audio_recorder_streamlit import audio_recorder
-from elevenlabs.client import ElevenLabs
 from streamlit_chat import message
 
 from src.generator import Generator
-from src.consts import TEMP_AUDIO_PATH, AUDIO_FORMAT, ELEVEN_API_KEY
+from src.db_router import DBRouter
+from src.consts import TEMP_AUDIO_PATH, AUDIO_FORMAT
 
 
 class UI:
@@ -13,11 +13,11 @@ class UI:
     A class to handle the Streamlit user interface for the application.
     """
 
-    def __init__(self, generator: Generator):
+    def __init__(self, generator: Generator, db_router: DBRouter):
         self.generator = generator
-        self.transcription = None
+        self.db_router = db_router
 
-    def record_and_transcribe_audio(self):
+    def _record_and_transcribe_audio(self):
         """
         Record audio from the user and transcribe it using the Whisper API.
 
@@ -31,49 +31,40 @@ class UI:
                 f.write(audio_bytes)
 
             if st.button("Transcribe"):
-                self.transcription = self.generator.transcribe_audio(TEMP_AUDIO_PATH)
+                st.session_state.transcription = self.generator.transcribe_audio(
+                    TEMP_AUDIO_PATH
+                )
                 os.remove(TEMP_AUDIO_PATH)
-                self.display_transcription()
 
-    def display_transcription(self):
-        """
-        Display the transcribed audio in the UI.
-
-        Returns:
-            None
-        """
-        if self.transcription:
-            st.write(f"Transcription: {self.transcription}")
-        else:
-            st.write("Error transcribing audio.")
-
-    def get_user_input(self) -> str:
+    def _get_user_input(self) -> str:
         """
         Get the user's input from the text input field or the transcribed audio.
 
         Returns:
             The user's input.
         """
+        self._record_and_transcribe_audio()
+
+        st.write("##### Or enter the text below:")
         with st.form(key="user_input_form", clear_on_submit=True):
             user_input = st.text_input(
-                "", value=self.transcription if self.transcription else "", key="input"
+                "Type your message here:",
+                value=st.session_state.get("transcription", ""),
+                key="input",
             )
-            submitted = st.form_submit_button()
+            submitted = st.form_submit_button("Submit")
         if submitted and user_input:
+            st.session_state.transcription = ""
             return user_input
 
     @staticmethod
-    def display_conversation(history: st.session_state):
+    def _display_conversation(history: st.session_state):
         """
         Display the conversation history in the UI.
 
         Args:
             history: The conversation history to display.
-
-        Returns
-            None
         """
-        eleven_labs = ElevenLabs(api_key=ELEVEN_API_KEY)
         for i, (past, generated, source_documents) in enumerate(
             zip(history["past"], history["generated"], history["source_documents"])
         ):
@@ -88,7 +79,10 @@ class UI:
                     )
                     st.divider()
 
-    def main(self):
+    def show_main_page(self):
+        """
+        Display the main page of the application.
+        """
         st.title("rag-with-voice-assistant 🌐️")
 
         if "generated" not in st.session_state:
@@ -97,10 +91,12 @@ class UI:
             st.session_state["past"] = ["Hey there!"]
         if "source_documents" not in st.session_state:
             st.session_state["source_documents"] = [[]]
+        if "transcription" not in st.session_state:
+            st.session_state["transcription"] = ""
 
-        self.display_conversation(st.session_state)
+        self._display_conversation(st.session_state)
 
-        user_input = self.get_user_input()
+        user_input = self._get_user_input()
 
         if user_input:
             with st.spinner("Searching knowledge base..."):
@@ -112,7 +108,58 @@ class UI:
 
             st.experimental_rerun()
 
+    def show_knowledge_base_page(self):
+        """
+        Display the knowledge base management page of the application.
+        """
+        st.title("knowledge-base-management 📖")
+
+        st.write("### Add new document by URL")
+
+        with st.form(key="add_document_form", clear_on_submit=True):
+            url = st.text_input("Enter URL to add document", key="add_url")
+            submitted = st.form_submit_button("Add Document")
+
+        if submitted and url:
+            with st.spinner("Adding document..."):
+                self.db_router.add_document_by_url(url)
+                st.experimental_rerun()
+
+        metadata_list = self.db_router.get_all_documents_metadata
+
+        st.write("### Existing Documents Metadata")
+
+        col1, col2, col3, col4 = st.columns((3, 3, 1, 1))
+        col1.write("**Source**")
+        col2.write("**Title**")
+        col3.write("**Count**")
+        col4.write("**Action**")
+
+        for i, metadata in enumerate(metadata_list):
+            col1, col2, col3, col4 = st.columns((3, 3, 1, 1))
+            col1.write(metadata["source"])
+            col2.write(metadata.get("title", "No Title"))
+            col3.write(metadata["count"])
+
+            if col4.button("Delete", key=f"delete_{i}"):
+                with st.spinner("Deleting document..."):
+                    self.db_router.delete_documents_by_url(metadata["source"])
+                    st.experimental_rerun()
+            st.divider()
+
+    def main(self):
+        st.sidebar.title("Navigation")
+        page = st.sidebar.selectbox(
+            "Go to", ("RAG with Voice Assistant", "Knowledge Base Management")
+        )
+
+        if page == "RAG with Voice Assistant":
+            self.show_main_page()
+        elif page == "Knowledge Base Management":
+            self.show_knowledge_base_page()
+
 
 if __name__ == "__main__":
-    ui = UI(generator=Generator())
+    generator = Generator()
+    ui = UI(generator, DBRouter(generator.db))
     ui.main()

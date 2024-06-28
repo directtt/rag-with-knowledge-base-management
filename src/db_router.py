@@ -1,4 +1,5 @@
 import logging
+from collections import defaultdict
 from langchain_community.utilities import ApifyWrapper
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.docstore.document import Document
@@ -12,6 +13,7 @@ class DBRouter:
     """
     Router to manage vector database (DeepLake) operations.
     """
+
     def __init__(self, db: DeepLake):
         self.db = db
         self.ds = db.ds()
@@ -25,7 +27,8 @@ class DBRouter:
             List of documents metadata.
         """
         try:
-            return [doc.data()['value'] for doc in self.ds.metadata]
+            raw_metadata = [doc.data()["value"] for doc in self.ds.metadata]
+            return self._parse_metadata(raw_metadata)
         except Exception as e:
             raise Exception(f"Error getting all documents metadata: {str(e)}")
 
@@ -40,7 +43,7 @@ class DBRouter:
             True if documents were deleted, False otherwise.
         """
         try:
-            return self.db.delete(filter={'metadata': {'source': url}})
+            return self.db.delete(filter={"metadata": {"source": url}})
         except Exception as e:
             raise Exception(f"Error deleting documents by URL: {str(e)}")
 
@@ -55,13 +58,24 @@ class DBRouter:
             List of added document IDs.
         """
         try:
-            return self.db.add_documents(
-                self._split_data(
-                    self._scrape_data(url)
-                )
-            )
+            return self.db.add_documents(self._split_data(self._scrape_data(url)))
         except Exception as e:
             raise Exception(f"Error adding document by URL: {str(e)}")
+
+    @staticmethod
+    def _parse_metadata(raw_metadata: list[dict]) -> list[dict]:
+        metadata_count = defaultdict(int)
+
+        for metadata in raw_metadata:
+            metadata_tuple = tuple(metadata.items())
+            metadata_count[metadata_tuple] += 1
+
+        unique_metadata_with_counts = [
+            {**dict(metadata_tuple), "count": count}
+            for metadata_tuple, count in metadata_count.items()
+        ]
+
+        return unique_metadata_with_counts
 
     @staticmethod
     def _scrape_data(url: str) -> list[Document]:
@@ -82,7 +96,9 @@ class DBRouter:
             run_input={"startUrls": [{"url": url}]},
             dataset_mapping_function=lambda dataset_item: Document(
                 page_content=(
-                    dataset_item["text"] if dataset_item["text"] else "No content available"
+                    dataset_item["text"]
+                    if dataset_item["text"]
+                    else "No content available"
                 ),
                 metadata={
                     "source": dataset_item["url"],
@@ -94,7 +110,7 @@ class DBRouter:
 
     @staticmethod
     def _split_data(
-            docs, chunk_size: int = 1000, chunk_overlap: int = 20, length_function=len
+        docs, chunk_size: int = 1000, chunk_overlap: int = 20, length_function=len
     ) -> list[Document]:
         """
         Split the scraped data into smaller chunks.
@@ -117,5 +133,3 @@ class DBRouter:
         )
         docs_split = text_splitter.split_documents(docs)
         return docs_split
-
-

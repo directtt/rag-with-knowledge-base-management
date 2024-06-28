@@ -20,8 +20,8 @@
   - [x] Get metadata by specific url
   - [x] Delete specific documents based on metadata urls
   - [x] Add new documents based on url
-- [ ] Refactor completely the `scrape.py` file: incorporate sidebar into application, allow user to CRUD RAG knowledge base from UI.
-- [ ] Some efficiency improvements of the app.
+- [x] Refactor completely the `scrape.py` file: incorporate sidebar into application, allow user to CRUD RAG knowledge base from UI.
+- [x] Some efficiency improvements of the app.
 - [ ] Dockerize the application.
 - [x] Write some unit-tests.
 - [ ] Fill README.md & record small demo. 

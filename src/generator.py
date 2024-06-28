@@ -34,9 +34,7 @@ class Generator:
     def _load_embeddings_and_database(_self, dataset_path: str) -> DeepLake:
         try:
             embeddings = OpenAIEmbeddings()
-            db = DeepLake(
-                dataset_path=dataset_path, embedding_function=embeddings
-            )
+            db = DeepLake(dataset_path=dataset_path, embedding_function=embeddings)
             return db
         except Exception as e:
             raise Exception(f"Error loading embeddings and database: {str(e)}")
