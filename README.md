@@ -1,6 +1,6 @@
 # rag-with-knowledge-base-management
 
-RAG (Retrieval-Augmented Generation) model integrated with a voice assistant and knowledge base management system.
+RAG (Retrieval-Augmented Generation) app integrated with a voice assistant and knowledge base management system.
 
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
@@ -21,7 +21,7 @@ RAG (Retrieval-Augmented Generation) model integrated with a voice assistant and
 ## Introduction
 
 This application integrates a RAG (Retrieval-Augmented Generation) model with a voice assistant, allowing users to interact with the system via voice or text input.
-Additionally, it includes a knowledge base management system, enabling users to add, view, and delete documents used by the RAG model using URLs.
+Additionally, it includes a knowledge base management system, enabling users to add, view, and delete documents used by the RAG model via URLs.
 
 ## Technologies
 
