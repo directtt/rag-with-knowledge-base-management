@@ -1,5 +1,10 @@
 # rag-with-knowledge-base-management
 
+RAG (Retrieval-Augmented Generation) model integrated with a voice assistant and knowledge base management system.
+
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+
 ## Table of Contents
 - [Introduction](#introduction)
 - [Technologies](#technologies)
@@ -7,16 +12,16 @@
   - [OpenAI Models](#openai-models)
   - [DeepLake Vector Store](#deeplake-vector-store)
   - [Streamlit](#streamlit)
-  - [Other Technologies](#other-technologies)
 - [Preview](#preview)
 - [Installation & usage](#installation--usage)
+- [API keys](#api-keys)
 - [License](#license)
-- [References](#references)
+
 
 ## Introduction
 
 This application integrates a RAG (Retrieval-Augmented Generation) model with a voice assistant, allowing users to interact with the system via voice or text input.
-Additionally, it includes a knowledge base management system, enabling users to add, view, and delete documents used by the RAG model.
+Additionally, it includes a knowledge base management system, enabling users to add, view, and delete documents used by the RAG model using URLs.
 
 ## Technologies
 
@@ -58,11 +63,10 @@ docker run -p 8501:8501 rag-with-knowledge-base-management
 
 The application should now be accessible at http://localhost:8501.
 
+## API keys
+
+TODO
 
 ## License
 
 Distributed under the open-source Apache 2.0 License. See `LICENSE` for more information.
-
-## API keys
-
-TODO
