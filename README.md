@@ -7,13 +7,13 @@ RAG (Retrieval-Augmented Generation) app integrated with a voice assistant and k
 
 ## Table of Contents
 - [Introduction](#introduction)
+- [Preview](#preview)
 - [Technologies](#technologies)
   - [LangChain](#langchain)
   - [OpenAI Models](#openai-models)
   - [DeepLake Vector Store](#deeplake-vector-store)
   - [Apify](#apify)
   - [Streamlit](#streamlit)
-- [Preview](#preview)
 - [Installation & usage](#installation--usage)
 - [API keys](#api-keys)
 - [License](#license)
@@ -22,6 +22,10 @@ RAG (Retrieval-Augmented Generation) app integrated with a voice assistant and k
 
 This application integrates a RAG (Retrieval-Augmented Generation) model with a voice assistant, allowing users to interact with the system via voice or text input.
 Additionally, it includes a knowledge base management system, enabling users to add, view, and delete documents used by the RAG model via URLs.
+
+## Preview
+
+https://github.com/directtt/rag-with-knowledge-base-management/assets/72359171/c3ef6984-c06a-4c72-b364-361acffeae01
 
 ## Technologies
 
@@ -44,11 +48,6 @@ Additionally, [Cohere](https://cohere.com/) Re-ranker (**default:** `rerank-engl
 
 ### Streamlit
 [Streamlit](https://github.com/streamlit/streamlit) is an open-source app framework that allows for the creation of custom web applications for machine learning and data science projects with minimal effort. It is used here to build the user interface of the application.
-
-## Preview
-
-https://github.com/directtt/rag-with-knowledge-base-management/assets/72359171/c3ef6984-c06a-4c72-b364-361acffeae01
-
 
 ## Installation & usage
 
