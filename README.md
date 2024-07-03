@@ -18,10 +18,6 @@ RAG (Retrieval-Augmented Generation) app integrated with a voice assistant and k
 - [API keys](#api-keys)
 - [License](#license)
 
-## TODO
-- [ ] finish README
-- [ ] add preview (video/gif)
-
 ## Introduction
 
 This application integrates a RAG (Retrieval-Augmented Generation) model with a voice assistant, allowing users to interact with the system via voice or text input.
@@ -51,7 +47,8 @@ Additionally, [Cohere](https://cohere.com/) Re-ranker (**default:** `rerank-engl
 
 ## Preview
 
-TODO
+https://github.com/directtt/rag-with-knowledge-base-management/assets/72359171/c3ef6984-c06a-4c72-b364-361acffeae01
+
 
 ## Installation & usage
 
