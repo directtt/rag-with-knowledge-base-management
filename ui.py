@@ -108,12 +108,10 @@ class UI:
 
             st.experimental_rerun()
 
-    def show_knowledge_base_page(self):
+    def _add_document_by_url(self):
         """
-        Display the knowledge base management page of the application.
+        Display the UI to add a new document by URL.
         """
-        st.title("knowledge-base-management 📖")
-
         st.write("### Add new document by URL")
 
         with st.form(key="add_document_form", clear_on_submit=True):
@@ -125,6 +123,10 @@ class UI:
                 self.db_router.add_document_by_url(url)
                 st.experimental_rerun()
 
+    def _display_existing_documents_metadata(self):
+        """
+        Display the metadata of the existing documents in the knowledge base.
+        """
         metadata_list = self.db_router.get_all_documents_metadata
 
         st.write("### Existing Documents Metadata")
@@ -146,6 +148,16 @@ class UI:
                     self.db_router.delete_documents_by_url(metadata["source"])
                     st.experimental_rerun()
             st.divider()
+
+    def show_knowledge_base_page(self):
+        """
+        Display the knowledge base management page of the application.
+        """
+        st.title("knowledge-base-management 📖")
+
+        self._add_document_by_url()
+
+        self._display_existing_documents_metadata()
 
     def main(self):
         st.sidebar.title("Navigation")

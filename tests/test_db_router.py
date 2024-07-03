@@ -17,7 +17,9 @@ def test_add_document_by_url():
 
     metadata = db_router.get_all_documents_metadata
     added_docs = [doc for doc in metadata if doc["source"] == url]
-    assert len(added_docs) == 3
+
+    assert len(added_docs) == 1
+    assert added_docs[0]["count"] == 3
 
 
 def test_delete_documents_by_url():

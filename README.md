@@ -11,12 +11,16 @@ RAG (Retrieval-Augmented Generation) app integrated with a voice assistant and k
   - [LangChain](#langchain)
   - [OpenAI Models](#openai-models)
   - [DeepLake Vector Store](#deeplake-vector-store)
+  - [Apify](#apify)
   - [Streamlit](#streamlit)
 - [Preview](#preview)
 - [Installation & usage](#installation--usage)
 - [API keys](#api-keys)
 - [License](#license)
 
+## TODO
+- [ ] finish README
+- [ ] add preview (video/gif)
 
 ## Introduction
 
@@ -38,6 +42,9 @@ Additionally, [Cohere](https://cohere.com/) Re-ranker (**default:** `rerank-engl
 
 ### DeepLake Vector Store
 [DeepLake](https://github.com/activeloopai/deeplake) is used as a vector store to store and retrieve document embeddings. It facilitates efficient similarity search and retrieval of relevant documents from the knowledge base.
+
+### Apify
+[Apify](https://apify.com/) is a web scraping and automation platform that allows for the extraction of data from websites. It is used to scrape documents from URLs provided by users and store them in the knowledge base.
 
 ### Streamlit
 [Streamlit](https://github.com/streamlit/streamlit) is an open-source app framework that allows for the creation of custom web applications for machine learning and data science projects with minimal effort. It is used here to build the user interface of the application.
@@ -64,8 +71,12 @@ docker run -p 8501:8501 rag-with-knowledge-base-management
 The application should now be accessible at http://localhost:8501.
 
 ## API keys
-
-TODO
+Please make sure to add your API keys to the `.env` file before running the application. The following keys inside `.env.example` need to be filled in:
+- `OPENAI_API_KEY` - [OpenAI](https://platform.openai.com/) API key
+- `COHERE_API_KEY` - [Cohere](https://cohere.com/) API key
+- `APIFY_API_TOKEN` - [Apify](https://apify.com/) API token
+- `ACTIVELOOP_TOKEN` - [ActiveLoop](https://activeloop.ai/) API token
+- `ACTIVELOOP_ORG_ID` - [ActiveLoop](https://activeloop.ai/) organization ID
 
 ## License
 
