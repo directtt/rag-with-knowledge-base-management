@@ -17,6 +17,7 @@ RAG (Retrieval-Augmented Generation) app integrated with a voice assistant and k
 - [Installation & usage](#installation--usage)
 - [API keys](#api-keys)
 - [License](#license)
+- [References](#references)
 
 ## Introduction
 
@@ -77,3 +78,9 @@ Please make sure to add your API keys to the `.env` file before running the appl
 ## License
 
 Distributed under the open-source Apache 2.0 License. See `LICENSE` for more information.
+
+## References
+
+Following repositories were useful in building this project:
+- TODO
+

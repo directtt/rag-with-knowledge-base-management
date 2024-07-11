@@ -8,7 +8,7 @@ from langchain_community.embeddings import OpenAIEmbeddings
 from langchain_community.vectorstores import DeepLake
 import streamlit as st
 
-from src.consts import ACTIVELOOP_DATASET_PATH
+from src.consts import ACTIVELOOP_DATASET_NAME
 
 
 class Generator:
@@ -18,23 +18,32 @@ class Generator:
 
     def __init__(
         self,
+        credentials: dict[str, str],
         chat_model_name: str = "gpt-3.5-turbo",
         cohere_rerank_model_name: str = "rerank-english-v2.0",
         transcription_model_name: str = "whisper-1",
-        dataset_path: str = ACTIVELOOP_DATASET_PATH,
     ):
+        self.credentials = credentials
+
         self.chat_model_name = chat_model_name
         self.cohere_rerank_model_name = cohere_rerank_model_name
         self.transcription_model_name = transcription_model_name
 
-        self.db = self._load_embeddings_and_database(dataset_path)
+        self.db = self._load_embeddings_and_database()
         self.chat_model, self.memory = self._load_chat_model()
 
     @st.cache_resource
-    def _load_embeddings_and_database(_self, dataset_path: str) -> DeepLake:
+    def _load_embeddings_and_database(_self) -> DeepLake:
         try:
-            embeddings = OpenAIEmbeddings()
-            db = DeepLake(dataset_path=dataset_path, embedding_function=embeddings)
+            embeddings = OpenAIEmbeddings(
+                openai_api_key=_self.credentials["openai_api_key"]
+            )
+            ACTIVELOOP_ORG_ID = _self.credentials["activeloop_org_id"]
+            db = DeepLake(
+                dataset_path=f"hub://{ACTIVELOOP_ORG_ID}/{ACTIVELOOP_DATASET_NAME}",
+                embedding_function=embeddings,
+                token=_self.credentials["activeloop_token"],
+            )
             return db
         except Exception as e:
             raise Exception(f"Error loading embeddings and database: {str(e)}")
@@ -45,7 +54,11 @@ class Generator:
     ) -> tuple[ConversationalRetrievalChain, ConversationBufferWindowMemory]:
         try:
             retriever = _self.db.as_retriever()
-            compressor = CohereRerank(model=_self.cohere_rerank_model_name, top_n=top_n)
+            compressor = CohereRerank(
+                model=_self.cohere_rerank_model_name,
+                top_n=top_n,
+                cohere_api_key=_self.credentials["cohere_api_key"],
+            )
             compression_retriever = ContextualCompressionRetriever(
                 base_compressor=compressor, base_retriever=retriever
             )
@@ -56,7 +69,10 @@ class Generator:
                 output_key="answer",
             )
             chat_model = ConversationalRetrievalChain.from_llm(
-                llm=ChatOpenAI(model_name=_self.chat_model_name),
+                llm=ChatOpenAI(
+                    model_name=_self.chat_model_name,
+                    openai_api_key=_self.credentials["openai_api_key"],
+                ),
                 retriever=compression_retriever,
                 memory=memory,
                 verbose=True,

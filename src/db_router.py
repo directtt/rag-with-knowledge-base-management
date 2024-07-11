@@ -14,7 +14,9 @@ class DBRouter:
     Router to manage vector database (DeepLake) operations.
     """
 
-    def __init__(self, db: DeepLake):
+    def __init__(self, credentials: dict[str, str], db: DeepLake):
+        self.credentials = credentials
+
         self.db = db
         self.ds = db.ds()
 
@@ -77,8 +79,7 @@ class DBRouter:
 
         return unique_metadata_with_counts
 
-    @staticmethod
-    def _scrape_data(url: str) -> list[Document]:
+    def _scrape_data(self, url: str) -> list[Document]:
         """
         Scrape data from a given URL.
 
@@ -90,7 +91,7 @@ class DBRouter:
         """
         logging.info(f"Scraping data from url: {url}")
 
-        apify = ApifyWrapper()
+        apify = ApifyWrapper(apify_api_token=self.credentials["apify_api_token"])
         loader = apify.call_actor(
             actor_id="apify/website-content-crawler",
             run_input={"startUrls": [{"url": url}]},

@@ -3,9 +3,12 @@ import streamlit as st
 from audio_recorder_streamlit import audio_recorder
 from streamlit_chat import message
 
+from src.auth import Auth
 from src.generator import Generator
 from src.db_router import DBRouter
 from src.consts import TEMP_AUDIO_PATH, AUDIO_FORMAT
+
+st.set_page_config(page_icon="🌐️")
 
 
 class UI:
@@ -172,6 +175,9 @@ class UI:
 
 
 if __name__ == "__main__":
-    generator = Generator()
-    ui = UI(generator, DBRouter(generator.db))
+    auth = Auth()
+    auth.authentication_widget()
+
+    generator = Generator(st.session_state["credentials"])
+    ui = UI(generator, DBRouter(st.session_state["credentials"], generator.db))
     ui.main()
