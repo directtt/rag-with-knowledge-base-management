@@ -87,7 +87,7 @@ class Auth:
 
         if not st.session_state["auth_ok"]:
             st.info(
-                "Please enter your credentials or submit to use the environment variables.",
+                "Please enter your credentials or submit to use the default environment variables.",
                 icon=":material/info:",
             )
             st.stop()

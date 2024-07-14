@@ -8,13 +8,14 @@ RAG (Retrieval-Augmented Generation) app integrated with a voice assistant and k
 ## Table of Contents
 - [Introduction](#introduction)
 - [Preview](#preview)
+- [Deployment](#deployment)
 - [Technologies](#technologies)
   - [LangChain](#langchain)
   - [OpenAI Models](#openai-models)
   - [DeepLake Vector Store](#deeplake-vector-store)
   - [Apify](#apify)
   - [Streamlit](#streamlit)
-- [Installation & usage](#installation--usage)
+- [Local installation & usage](#installation--usage)
 - [API keys](#api-keys)
 - [License](#license)
 - [References](#references)
@@ -27,6 +28,12 @@ Additionally, it includes a knowledge base management system, enabling users to 
 ## Preview
 
 https://github.com/directtt/rag-with-knowledge-base-management/assets/72359171/c3ef6984-c06a-4c72-b364-361acffeae01
+
+## Deployment
+
+The application is deployed on [Streamlit Share](https://share.streamlit.io/) and can be accessed
+at the following URL:
+- https://rag-with-knowledge-base-management.streamlit.app
 
 ## Technologies
 
@@ -50,7 +57,7 @@ Additionally, [Cohere](https://cohere.com/) Re-ranker (**default:** `rerank-engl
 ### Streamlit
 [Streamlit](https://github.com/streamlit/streamlit) is an open-source app framework that allows for the creation of custom web applications for machine learning and data science projects with minimal effort. It is used here to build the user interface of the application.
 
-## Installation & usage
+## Local installation & usage
 
 To install the application locally, you need to have [Docker](https://docs.docker.com/get-docker/) installed on your machine.
 Then, run following commands:
