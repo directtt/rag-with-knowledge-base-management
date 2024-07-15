@@ -89,5 +89,6 @@ Distributed under the open-source Apache 2.0 License. See `LICENSE` for more inf
 ## References
 
 Following repositories were useful in building this project:
-- TODO
+- https://github.com/peterw/JarvisBase
+- https://github.com/gustavz/DataChad/tree/main
 
