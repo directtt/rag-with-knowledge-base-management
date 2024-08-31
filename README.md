@@ -90,5 +90,5 @@ Distributed under the open-source Apache 2.0 License. See `LICENSE` for more inf
 
 Following repositories were useful in building this project:
 - https://github.com/peterw/JarvisBase
-- https://github.com/gustavz/DataChad/tree/main
+- https://github.com/gustavz/DataChad
 
